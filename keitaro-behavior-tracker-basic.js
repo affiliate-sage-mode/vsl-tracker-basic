@@ -1,11 +1,12 @@
 /*
  * Keitaro Landing Behavior Tracker — Basic Edition
- * For LOCAL Keitaro v11 landing pages only.
+ * For LOCAL Keitaro landing pages only.
  * Put this inline in index.html or index.php before </body>.
  *
+ * Default sub IDs (change them in CONFIG.subs):
  * sub_id_15 — time in a visible tab, rounded down to the last checkpoint (seconds)
  * sub_id_16 — furthest HTML5 video position reached with sound, rounded down to videoStepSec
- * sub_id_19 — events joined with '-': play, sound (played unmuted), form (form visible)
+ * sub_id_17 — events joined with '-': play, sound (played unmuted), form (form visible)
  *
  * Uses Keitaro's built-in /?_update_tokens=1 endpoint.
  */
@@ -13,8 +14,14 @@
   'use strict';
 
   const CONFIG = {
-    timeCheckpoints: [5, 15, 30, 60, 90, 120, 180, 240, 300, 450, 600, 900, 1200], // sub_id_15 values
-    videoStepSec: 15,             // sub_id_16 rounding step (seconds)
+    // Keitaro sub IDs to write into: any free ones from sub_id_1 … sub_id_30.
+    subs: {
+      time: 'sub_id_15',
+      video: 'sub_id_16',
+      events: 'sub_id_17'
+    },
+    timeCheckpoints: [5, 15, 30, 60, 90, 120, 180, 240, 300, 450, 600, 900, 1200], // subs.time values
+    videoStepSec: 15,             // subs.video rounding step (seconds)
     videoSelector: 'video',       // If there are several videos, use '#vsl-player'.
     formSelector: 'form',         // Prefer a specific selector if necessary.
     formVisibility: 0.2
@@ -46,28 +53,28 @@
   }
 
   const pad = (n, width = 4) => String(Math.floor(n)).padStart(width, '0');
-  // sub_id_19 values, always in this order, e.g. 'play-sound-form'.
+  // subs.events values, always in this order, e.g. 'play-sound-form'.
   const FLAG_ORDER = ['play', 'sound', 'form'];
   const flagsValue = () => FLAG_ORDER.filter(k => state.flags[k]).join('-');
 
   // Send the latest known state, not a history of individual events.
   function snapshot() {
     const data = {};
-    if (state.reportedTime > 0) data.sub_id_15 = pad(state.reportedTime);
+    if (state.reportedTime > 0) data[CONFIG.subs.time] = pad(state.reportedTime);
     if (state.reportedVideo >= 0 && state.videoDuration > 0) {
       const pct = Math.min(100, Math.floor(100 * state.reportedVideo / state.videoDuration));
-      data.sub_id_16 = `${pad(state.reportedVideo)}/${pad(state.videoDuration)} (${pad(pct, 3)}%)`;
+      data[CONFIG.subs.video] = `${pad(state.reportedVideo)}/${pad(state.videoDuration)} (${pad(pct, 3)}%)`;
     }
     const flags = flagsValue();
-    if (flags) data.sub_id_19 = flags;
+    if (flags) data[CONFIG.subs.events] = flags;
     return data;
   }
 
   function urlFor(data) {
     return '/?' + new URLSearchParams({
+      ...data,
       _update_tokens: '1',
-      sub_id: subId,
-      ...data
+      sub_id: subId
     }).toString();
   }
 
