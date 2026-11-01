@@ -6,7 +6,7 @@
 
 A small inline script that writes visitor behavior straight into the Keitaro click's sub IDs: time on page, VSL watched with sound, and whether the form came into view. You can then group Keitaro reports by these sub IDs and compare them with conversions.
 
-For **local Keitaro v11 ZIP landing pages** only, opened through a tracker campaign.
+For **local Keitaro ZIP landing pages** only, opened through a tracker campaign.
 
 ### Installation
 
@@ -45,7 +45,7 @@ Only **one native HTML5 video player** is supported; YouTube/Vimeo iframe player
 - Requests go **only to the current Keitaro domain**, path `/?_update_tokens=1`; no external services.
 - `keepalive` is best-effort. It **does not guarantee** that the final state is delivered when the tab closes. If the final request runs in parallel with an older one, they may be processed in reverse order.
 - Restoring state after F5 relies on `sessionStorage`; it is not server-side storage and not antifraud.
-- Before public use, test it in your own Keitaro v11, in particular that a request to `/?_update_tokens=1` updates exactly the right click.
+- Before public use, test it in your own Keitaro, in particular that a request to `/?_update_tokens=1` updates exactly the right click.
 
 Keitaro docs: https://docs.keitaro.io/en/landing-pages-and-offers/update-params.html
 
@@ -55,7 +55,7 @@ Keitaro docs: https://docs.keitaro.io/en/landing-pages-and-offers/update-params.
 
 Невеликий inline-скрипт, який записує поведінку відвідувача прямо в саби кліку Keitaro: час на сторінці, перегляд VSL зі звуком і появу форми в полі зору. Ці саби можна групувати у звітах Keitaro і порівнювати з конверсіями.
 
-Тільки для **локальних ZIP-лендингів Keitaro v11**, які відкриваються через кампанію трекера.
+Тільки для **локальних ZIP-лендингів Keitaro**, які відкриваються через кампанію трекера.
 
 ### Встановлення
 
@@ -94,6 +94,6 @@ Keitaro docs: https://docs.keitaro.io/en/landing-pages-and-offers/update-params.
 - Запити йдуть **тільки на поточний домен Keitaro**, шляхом `/?_update_tokens=1`; зовнішніх сервісів немає.
 - `keepalive` — best-effort механізм. Він **не гарантує**, що фінальний стан буде доставлений при закритті вкладки. Якщо фінальний запит надходить паралельно зі старішим запитом, можливий зворотний порядок обробки.
 - Відновлення після F5 базується на `sessionStorage`; це не серверне зберігання і не антифрод.
-- Перед публічним використанням перевірте у своєму Keitaro v11: зокрема, що запит до `/?_update_tokens=1` оновлює параметри саме потрібного кліка.
+- Перед публічним використанням перевірте у своєму Keitaro: зокрема, що запит до `/?_update_tokens=1` оновлює параметри саме потрібного кліка.
 
 Документація Keitaro: https://docs.keitaro.io/en/landing-pages-and-offers/update-params.html
