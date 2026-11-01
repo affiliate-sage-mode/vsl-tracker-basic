@@ -5,7 +5,7 @@
  *
  * sub_id_15 — time in a visible tab, rounded down to the last checkpoint (seconds)
  * sub_id_16 — furthest HTML5 video position reached with sound, rounded down to videoStepSec
- * sub_id_19 — event flags: p=play, u=unmuted play, f=form visible
+ * sub_id_19 — events joined with '-': play, sound (played unmuted), form (form visible)
  *
  * Uses Keitaro's built-in /?_update_tokens=1 endpoint.
  */
@@ -46,7 +46,9 @@
   }
 
   const pad = (n, width = 4) => String(Math.floor(n)).padStart(width, '0');
-  const flagsValue = () => ['p', 'u', 'f'].filter(k => state.flags[k]).join('');
+  // sub_id_19 values, always in this order, e.g. 'play-sound-form'.
+  const FLAG_ORDER = ['play', 'sound', 'form'];
+  const flagsValue = () => FLAG_ORDER.filter(k => state.flags[k]).join('-');
 
   // Send the latest known state, not a history of individual events.
   function snapshot() {
@@ -167,7 +169,7 @@
     if (!video) return;
 
     const audible = !video.paused && !video.muted && video.volume > 0;
-    if (audible) flag('u');
+    if (audible) flag('sound');
 
     const position = Math.floor(video.currentTime);
     if ((audible || (force && wasAudible)) &&
@@ -179,7 +181,7 @@
     if (Number.isFinite(video.duration) && video.duration > 0) {
       state.videoDuration = Math.floor(video.duration);
     }
-    if (state.flags.u && state.videoDuration > 0) {
+    if (state.flags.sound && state.videoDuration > 0) {
       const bucket = videoBucket();
       if (bucket > state.reportedVideo) {
         state.reportedVideo = bucket;
@@ -196,7 +198,7 @@
     video = found;
 
     video.addEventListener('play', () => {
-      flag('p');
+      flag('play');
       reportVideo();
     });
     video.addEventListener('volumechange', () => reportVideo(true));
@@ -206,7 +208,7 @@
     video.addEventListener('loadedmetadata', () => reportVideo());
 
     if (!video.paused) {
-      flag('p');
+      flag('play');
       reportVideo();
     }
   }
@@ -217,13 +219,13 @@
     if (entries.some(entry =>
       entry.isIntersecting && entry.intersectionRatio >= CONFIG.formVisibility
     )) {
-      flag('f');
+      flag('form');
       formObserver.disconnect();
     }
   }, { threshold: CONFIG.formVisibility });
 
   function bindForms() {
-    if (state.flags.f) return;
+    if (state.flags.form) return;
     document.querySelectorAll(CONFIG.formSelector).forEach(form => {
       if (!observedForms.has(form)) {
         observedForms.add(form);
@@ -237,7 +239,7 @@
     scan();
     const domObserver = new MutationObserver(() => {
       scan();
-      if (video && state.flags.f) domObserver.disconnect();
+      if (video && state.flags.form) domObserver.disconnect();
     });
     domObserver.observe(document.body, { childList: true, subtree: true });
   }
